@@ -216,6 +216,15 @@ let win_aware_quote_executable str =
       warn "The string %S contains suspicious characters; ocamlfind might fail" str in
     Str.global_replace (Str.regexp "\\\\") "/" str
 
+
+
+
+let build_date =
+    try
+      float_of_string (Sys.getenv "SOURCE_DATE_EPOCH")
+    with
+      Not_found -> Unix.time ()
+
 (** * Date *)
 
 (** The short one is displayed when starting coqtop,
@@ -226,7 +235,7 @@ let months =
     "July";"August";"September";"October";"November";"December" |]
 
 let get_date () =
-  let now = Unix.localtime (Unix.time ()) in
+  let now = Unix.gmtime build_date in
   let year = 1900+now.Unix.tm_year in
   let month = months.(now.Unix.tm_mon) in
   sprintf "%s %d" month year,
